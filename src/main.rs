@@ -1,5 +1,3 @@
-#![allow(dead_code)]
-#![allow(unused_variables)]
 use chrono::prelude::*;
 
 #[derive(Debug)]
@@ -12,13 +10,8 @@ impl Calendar {
     fn new() -> Self {
         Calendar {
             curr_dt: Local::now(),
-            num_days: 1,
+            num_days: get_num_days(Local::now().month(), Local::now().year()),
         }
-    }
-
-    /// set number of days from month
-    fn set_num_days(&mut self) {
-        self.num_days = get_num_days(self.curr_dt.month(), self.curr_dt.year());
     }
 
     /// show the current calendar of the month
@@ -27,22 +20,35 @@ impl Calendar {
         //println!("{}", self.curr_dt.format("%a %b %e %T %Y").to_string());
         println!("\t{}", self.curr_dt.format("%B %Y").to_string());
 
-        let mut day = Weekday::Sun;
+        let mut day = Weekday::Mon;
         print!("{} ", day);
         for _i in 1..=6 {
             day = day.succ();
-            print!("{} ", day);
+            print!("{:3} ", day);
         }
         println!("");
 
         // print days of the week
         let (year, month, day) = get_last_dt(self.curr_dt.month(), self.curr_dt.year());
-        //let dt = NaiveDate::from_ymd(year, month, day);
+        let dt = NaiveDate::from_ymd(year, month, day);
 
-        for day in 1..=self.num_days {
-            print!("{:3} ", day);
+        // print the spaces until the first day of the current month
+        for _i in 1..dt.weekday().succ().number_from_sunday() - 1 {
+            print!("    ");
         }
-
+        // print every day of the month and highlight the current day
+        let mut wday = dt.weekday().succ();
+        for i in 1..=self.num_days {
+            let mut day = format!("{}", i);
+            if i == self.curr_dt.day() {
+                day = format!("\x1b[02;47m{}\x1b[0m", i);
+            }
+            print!("{:3} ", day);
+            if wday == Weekday::Sun {
+                println!("");
+            }
+            wday = wday.succ();
+        }
         println!("");
     }
 }
@@ -66,7 +72,5 @@ fn get_last_dt(month: u32, year: i32) -> (i32, u32, u32) {
 }
 
 fn main() {
-    let mut calendar = Calendar::new();
-    calendar.set_num_days();
-    calendar.print();
+    Calendar::new().print();
 }
