@@ -1,4 +1,4 @@
-# cal
+# calr
 
 A calendar cli, simply show calendar
 

@@ -17,7 +17,6 @@ impl Calendar {
     /// show the current calendar of the month
     fn print(&self) {
         // print header
-        //println!("{}", self.curr_dt.format("%a %b %e %T %Y").to_string());
         println!("\t{}", self.curr_dt.format("%B %Y").to_string());
 
         let mut day = Weekday::Mon;
